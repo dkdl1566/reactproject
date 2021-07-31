@@ -8,12 +8,17 @@ export const getCatBreeds = async (currentPage, limit = 5) => {
     throw new Error('getCatBreeds 함수의 limit 파라미터는 number 이어야 합니다.')
   }
 
-  const reponse = await fetch(`https://api.thecatapi.com/v1/breeds?page=${currentPage}&limit=${limit}`, {
+  const response = await fetch(`https://api.thecatapi.com/v1/breeds?page=${currentPage}&limit=${limit}`, {
     headers: {
-      'x-api-key': apikey,
+      'x-api-key': apiKey,
     },
   })
-  const breeds = await reponse.json()
+  const breeds = await response.json()
 
   return breeds
+}
+
+export const catApiUrl = 'https://api.thecatapi.com/v1'
+export const catHeaders = {
+  'x-api-key': apiKey,
 }

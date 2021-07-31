@@ -12,16 +12,17 @@ class HelloWorld extends Component {
   }
 
   handlePlusClick = () => {
-    this.setState({ count: this.state.count + 1 })
+    this.setState({ count: this.state.count + 1})
     // 이렇게 두번 호출하면 어떻게 될까?
     // this.setState({ count: this.state.count + 1})
     // this.setState({ count: this.state.count + 1})
   }
-
+  
   render() {
     return (
       <div>
-        Hello {this.props.name}!<span>{this.state.count}</span>
+        Hello {this.props.name}!
+        <span>{this.state.count}</span>
         <button onClick={this.handlePlusClick}>+1</button>
       </div>
     )

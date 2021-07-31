@@ -7,7 +7,9 @@ const LoadingIndicator = ({ isLoading }) => {
     return null
   }
 
-  return <span>로딩중...</span>
+  return (
+    <span>로딩중...</span>
+  )
 }
 
 export default LoadingIndicator

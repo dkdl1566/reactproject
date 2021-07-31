@@ -1,90 +1,92 @@
 import '../components/Cats.scss'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 
-import LoadingIndicator from './Loadingindicator'
+import LoadingIndicator from './LoadingIndicator'
 import HeaderButtonGroup from './HeaderButtonGroup'
 
-import { getCatBreeds } from '../utils/api'
-
-const fetchedPages = []
+import { catApiUrl, catHeaders } from '../utils/api'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useFetch } from '../hooks/useFetch'
 
 const Cats = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [breeds, setBreeds] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  // const [counter, setCounter] = useState(0)
   const [time, setTime] = useState(0)
+  const [storedBreeds, storeBreeds] = useLocalStorage('breeds', [])
+  const [storedPages, storePages] = useLocalStorage('fetchedPages', [])
+  const [currentPage, setCurrentPage] = useState(storedPages.length !== 0 ? storedPages[storedPages.length - 1] : 1)
+  const params = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentPage]
+  )
+  const { data: breeds, isLoading, hasError, error } = useFetch(`${catApiUrl}/breeds`, params, catHeaders, storedBreeds)
 
   const handlePreviousPage = useCallback(() => {
     if (currentPage <= 1) {
       return
     }
+
     setCurrentPage(previousPage => previousPage - 1)
   }, [currentPage])
 
   const handleNextPage = useCallback(() => {
     setCurrentPage(previousPage => previousPage + 1)
-    // setCounter(100)
   }, [])
 
-  useEffect(() => {
-    const fetchBreeds = async () => {
-      setIsLoading(true)
-      const breeds = await getCatBreeds(currentPage, 10)
-
-      if (breeds.length === 0) {
-        setIsLoading(false)
-        return
-      }
-
-      setBreeds(prevBreeds => prevBreeds.concat(breeds))
-      setIsLoading(false)
-    }
-
-    //
-    if (fetchedPages.includes(currentPage)) {
-      return
-    }
-
-    fetchedPages.push(currentPage)
-    fetchBreeds()
-  }, [currentPage])
-
   // useEffect(() => {
-  //   if (counter === 100) {
-  //     // 무슨 기능 ...
+  //   if (storedPages.includes(currentPage)) {
+  //     return
   //   }
-  // }, [counter])
 
-  setInterval(() => {
-    setTime(previousTime => previousTime + 1)
-  }, 1000)
+  //   storePages(storedPages.concat(currentPage))
+  // }, [currentPage])
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(previousTime => previousTime + 1)
+    }, 1000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [])
 
   return (
     <div className="Cats">
-      <p>타이머 : {time}</p>
-      <p>현재 페이지: {currentPage}</p>
-      <HeaderButtonGroup onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
-      <LoadingIndicator isLoading={isLoading} />
-      <ul>
-        {breeds.map((breed, index) => (
-          <li className="Cat" key={`${breed.id}-${index}`}>
-            <span>Name: {breed.name}</span>
-            <span>Origin: {breed.origin}</span>
-            <span>Description: {breed.description}</span>
-            <span>
-              Wiki:{' '}
-              <a href={breed.wikipedia_url} target="_blank">
-                {breed.wikipedia_url}
-              </a>
-            </span>
-            <img className="Image" src={breed.image ? breed.image.url : null} />
-          </li>
-        ))}
-      </ul>
-      <LoadingIndicator isLoading={isLoading} />
-      <HeaderButtonGroup onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+      {!hasError ? (
+        <>
+          <p>타이머: {time}</p>
+          <p>현재 페이지: {currentPage}</p>
+          <HeaderButtonGroup onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+          <LoadingIndicator isLoading={isLoading} />
+          <ul>
+            {breeds.map((breed, index) => (
+              <li className="Cat" key={`${breed.id}-${index}`}>
+                <span>Name: {breed.name}</span>
+                <span>Origin: {breed.origin}</span>
+                <span>Description: {breed.description}</span>
+                <span>
+                  Wiki:{' '}
+                  <a href={breed.wikipedia_url} target="_blank">
+                    {breed.wikipedia_url}
+                  </a>
+                </span>
+                <img className="Image" src={breed.image ? breed.image.url : null} />
+              </li>
+            ))}
+          </ul>
+          <LoadingIndicator isLoading={isLoading} />
+          <HeaderButtonGroup onPreviousPage={handlePreviousPage} onNextPage={handleNextPage} />
+        </>
+      ) : (
+        <p>
+          데이터를 불러오는 도중 에러가 발생했습니다.
+          <br />
+          {JSON.stringify(error, null, 2)}
+        </p>
+      )}
     </div>
   )
 }

@@ -14,7 +14,9 @@ class LoadingIndicator extends Component {
       return null
     }
 
-    return <span>로딩중...</span>
+    return (
+      <span>로딩중...</span>
+    )
   }
 }
 
