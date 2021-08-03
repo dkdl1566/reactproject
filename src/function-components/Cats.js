@@ -21,7 +21,17 @@ const Cats = () => {
     }),
     [currentPage]
   )
-  const { data: breeds, isLoading, hasError, error } = useFetch(`${catApiUrl}/breeds`, params, catHeaders, storedBreeds)
+  const {
+    data: breeds,
+    isLoading,
+    hasError,
+    error,
+  } = useFetch(
+    `${catApiUrl}/breeds`,
+    params,
+    catHeaders,
+    storedBreeds
+  )
 
   const handlePreviousPage = useCallback(() => {
     if (currentPage <= 1) {

@@ -1,4 +1,4 @@
-const apikey = '0dc36c1c-e0b0-41c3-a26f-9ca7c4d6f4a8'
+const apiKey = '0dc36c1c-e0b0-41c3-a26f-9ca7c4d6f4a8'
 
 export const getCatBreeds = async (currentPage, limit = 5) => {
   if (typeof currentPage !== 'number') {

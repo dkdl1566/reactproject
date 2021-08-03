@@ -22,13 +22,13 @@ class Cats extends Component {
       return
     }
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       currentPage: prevState.currentPage - 1,
     }))
   }
 
   handleNextPage = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       currentPage: prevState.currentPage + 1,
     }))
   }
