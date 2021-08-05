@@ -8,7 +8,6 @@ import HeaderButtonGroup from './HeaderButtonGroup'
 import { catApiUrl, catHeaders } from '../utils/api'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useFetch } from '../hooks/useFetch'
-
 const Cats = () => {
   const [time, setTime] = useState(0)
   const [storedBreeds, storeBreeds] = useLocalStorage('breeds', [])
@@ -21,17 +20,7 @@ const Cats = () => {
     }),
     [currentPage]
   )
-  const {
-    data: breeds,
-    isLoading,
-    hasError,
-    error,
-  } = useFetch(
-    `${catApiUrl}/breeds`,
-    params,
-    catHeaders,
-    storedBreeds
-  )
+  const { data: breeds, isLoading, hasError, error } = useFetch(`${catApiUrl}/breeds`, params, catHeaders, storedBreeds)
 
   const handlePreviousPage = useCallback(() => {
     if (currentPage <= 1) {
@@ -45,13 +34,13 @@ const Cats = () => {
     setCurrentPage(previousPage => previousPage + 1)
   }, [])
 
-  // useEffect(() => {
-  //   if (storedPages.includes(currentPage)) {
-  //     return
-  //   }
+  useEffect(() => {
+    if (storedPages.includes(currentPage)) {
+      return
+    }
 
-  //   storePages(storedPages.concat(currentPage))
-  // }, [currentPage])
+    storePages(storedPages.concat(currentPage))
+  }, [currentPage])
 
   useEffect(() => {
     const intervalId = setInterval(() => {

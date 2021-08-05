@@ -1,4 +1,5 @@
 const apiKey = '0dc36c1c-e0b0-41c3-a26f-9ca7c4d6f4a8'
+// const apiKey = '886d3296-e688-4436-af98-f5eaa1f980f6'
 
 export const getCatBreeds = async (currentPage, limit = 5) => {
   if (typeof currentPage !== 'number') {
@@ -14,7 +15,6 @@ export const getCatBreeds = async (currentPage, limit = 5) => {
     },
   })
   const breeds = await response.json()
-
   return breeds
 }
 

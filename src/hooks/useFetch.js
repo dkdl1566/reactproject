@@ -19,7 +19,7 @@ export function useFetch(apiUrl, params, headers, initialData) {
           headers,
         })
         const data = await response.json()
-        setData((previousData => previousData.concat(data)))
+        setData(previousData => previousData.concat(data))
       } catch (error) {
         console.error(error)
         setError(error)
