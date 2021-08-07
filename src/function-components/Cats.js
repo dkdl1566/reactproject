@@ -13,6 +13,7 @@ const Cats = () => {
   const [storedBreeds, storeBreeds] = useLocalStorage('breeds', [])
   const [storedPages, storePages] = useLocalStorage('fetchedPages', [])
   const [currentPage, setCurrentPage] = useState(storedPages.length !== 0 ? storedPages[storedPages.length - 1] : 1)
+
   const params = useMemo(
     () => ({
       page: currentPage,
@@ -20,7 +21,34 @@ const Cats = () => {
     }),
     [currentPage]
   )
-  const { data: breeds, isLoading, hasError, error } = useFetch(`${catApiUrl}/breeds`, params, catHeaders, storedBreeds)
+  const {
+    data: breeds,
+    isLoading,
+    hasError,
+    error,
+  } = useFetch(
+    `${catApiUrl}/breeds`,
+    params,
+    catHeaders,
+    storedBreeds,
+    storeBreeds,
+    newData => {
+      storeBreeds(storedBreeds.concat(newData))
+    },
+    () => {
+      const hasFetched = storePages.includes(currentPage)
+
+      if (hasFetched) {
+        storePages(storedPages.concat(currentPage))
+      }
+      return !hasFetched
+    }
+  )
+
+  useEffect(() => {
+    console.log(breeds)
+    storeBreeds(storedBreeds.concat(breeds))
+  }, [breeds])
 
   const handlePreviousPage = useCallback(() => {
     if (currentPage <= 1) {
@@ -34,13 +62,13 @@ const Cats = () => {
     setCurrentPage(previousPage => previousPage + 1)
   }, [])
 
-  useEffect(() => {
-    if (storedPages.includes(currentPage)) {
-      return
-    }
+  // useEffect(() => {
+  //   if (storedPages.includes(currentPage)) {
+  //     return
+  //   }
 
-    storePages(storedPages.concat(currentPage))
-  }, [currentPage])
+  //   storePages(storedPages.concat(currentPage))
+  // }, [currentPage])
 
   useEffect(() => {
     const intervalId = setInterval(() => {
